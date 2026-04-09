@@ -1,7 +1,5 @@
 # main.py
 
-# Modified By: Syed Kamal Ahmed Hiron (IIT Patna)
-
 import os
 import argparse
 
@@ -168,11 +166,11 @@ if __name__ == "__main__":
     # ------------------------ Decoding/Inference-related arguments
     parser.add_argument("--mode", type=str, default='final_layer_context',
                         help="Generation mode (e.g., CAD, DOLA, LACD, ALACD, etc.).")
-    parser.add_argument("--alpha", type=float, default=0.15,
+    parser.add_argument("--alpha", type=float, default=0.30,
                         help="Alpha value for logits adjustment.")
     parser.add_argument("--layer_alpha", type=float, default=0.5,
                         help="Layer alpha for additional adjustments.")
-    parser.add_argument("--start_layer", type=int, default=12,
+    parser.add_argument("--start_layer", type=int, default=16,
                         help="Starting layer for comparisons.")
     parser.add_argument("--max_new_tokens", type=int, default=None,
                         help="Maximum number of new tokens to generate. Default: 25 for QA, 150 for summarization.")

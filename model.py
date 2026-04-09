@@ -240,10 +240,6 @@ class Base_Model:
         # Ensure we have at least some reasonable minimum
         return max(100, max_input_length)
 
-    #****************************************************
-    # Modified By: Syed Kamal Ahmed Hiron (IIT Patna)
-    #****************************************************
-    
     def generate(
         self,
         input_text,
@@ -652,9 +648,6 @@ class Base_Model:
     # (A-B vs A-B) JSD
     # --------------------------------------------------------------------------------
 
-    #****************************************************
-    # Developed By: Syed Kamal Ahmed Hiron (IIT Patna)
-    #****************************************************
     def _generate_advanced_contrast_layer_adjusted_context_jsd(
         self,
         context_ids,
@@ -715,7 +708,7 @@ class Base_Model:
             del out_ctx, out_nocxt, final_logits_context, final_logits_no_context, final_adjusted_logits
 
             if len(jsd_divergences) == 0:
-                next_token_id = torch.argmax(probs_final)  # Keep as scalar, will reshape for concatenation
+                next_token_id = torch.argmax(probs_final).unsqueeze(0)
             else:
                 # Sort by JSD descending
                 sorted_jsd = sorted(jsd_divergences, key=lambda x: x[0], reverse=True)
@@ -810,23 +803,20 @@ class Base_Model:
 
                 if adv_top_prob < base_top_prob * 0.9:
                     # Advanced is noticeably less confident -> use baseline token
-                    next_token_id = base_top_idx  # Keep as scalar, will reshape for concatenation
+                    next_token_id = base_top_idx.unsqueeze(0)
                 else:
-                    next_token_id = adv_top_idx  # Keep as scalar, will reshape for concatenation
+                    next_token_id = adv_top_idx.unsqueeze(0)
 
                 del idea_probs, idea_probs_conservative, idea_probs_standard
                 del chosen_mid_probs, mid_probs_list, mid_top_probs_list, jsd_divergences
-                # Note: probs_final is deleted later on line 819 (or 814 if breaking early)
 
             if next_token_id.item() in self.stop_word_ids:
                 del next_token_id, probs_final
                 break
 
-            # Reshape scalar to [1, 1] for concatenation with [1, seq_len]
-            next_token_id_2d = next_token_id.unsqueeze(0).unsqueeze(-1)
-            generated_context = torch.cat([generated_context, next_token_id_2d], dim=-1)
-            generated_no_context = torch.cat([generated_no_context, next_token_id_2d], dim=-1)
-            del next_token_id, next_token_id_2d, probs_final
+            generated_context = torch.cat([generated_context, next_token_id.unsqueeze(0)], dim=-1)
+            generated_no_context = torch.cat([generated_no_context, next_token_id.unsqueeze(0)], dim=-1)
+            del next_token_id, probs_final
 
             if self.device == "cuda":
                 clear_cuda_cache()

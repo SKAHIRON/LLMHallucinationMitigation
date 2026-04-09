@@ -17,7 +17,7 @@ def load_data_and_create_prompts(args):
         # Summarization datasets
         if args.dataset == 'cnn_dailymail':
             dataset_dict = load_dataset("cnn_dailymail", "3.0.0")
-            validation_dataset = dataset_dict["validation"].select(range(500))
+            validation_dataset = dataset_dict["validation"].select(range(50))
             prompts_with_context, summaries = create_prompts_from_cnn_dailymail(validation_dataset, include_context=True)
             prompts_without_context, _ = create_prompts_from_cnn_dailymail(validation_dataset, include_context=False)
         
@@ -42,7 +42,7 @@ def load_data_and_create_prompts(args):
         # QA datasets (original functionality)
         if args.dataset == 'hotpot_qa':
             dataset_dict = load_dataset("hotpot_qa", "distractor")
-            validation_dataset = dataset_dict["validation"].select(range(500))
+            validation_dataset = dataset_dict["validation"].select(range(1000))
             prompts_with_context, answers = create_prompts_from_hotpot(validation_dataset, include_context=True)
             prompts_without_context, _ = create_prompts_from_hotpot(validation_dataset, include_context=False)
 
